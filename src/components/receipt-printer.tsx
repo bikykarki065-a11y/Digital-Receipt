@@ -19,9 +19,9 @@ function Receipt({ data }: { data: ReceiptData }) {
         </dl>
         <div className="receipt-rule" />
         <div className="item-heading"><span>QTY / PACKAGE</span><span>AMT</span></div>
-        <div className="receipt-items">{data.items.map((item) => <div key={item.id}><span className="item-qty">{item.qty}×</span><span className="item-name">{item.desc}</span><span>${(item.qty * item.price).toFixed(2)}</span></div>)}</div>
+        <div className="receipt-items">{data.items.map((item) => <div key={item.id}><span className="item-qty">{item.qty}×</span><span className="item-name">{item.desc}</span><span>{(item.qty * item.price).toFixed(2)}</span></div>)}</div>
         <div className="receipt-rule" />
-        <div className="receipt-total"><span>TOTAL</span><strong>${receiptTotal(data).toFixed(2)}</strong></div>
+        <div className="receipt-total"><span>TOTAL</span><strong>{receiptTotal(data).toFixed(2)}</strong></div>
         <div className="receipt-thanks">Your journey is confirmed.<br /><span>See you in the Himalayas.</span></div>
         <div className="barcode" aria-hidden="true" />
         <div className="barcode-number">8 4 2 9 0 0 1 7 5 0</div>

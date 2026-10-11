@@ -51,28 +51,29 @@ export async function exportReceipt(data: ReceiptData) {
   doc.text(doc.splitTextToSize(data.tagline, 60), 10, 36);
   doc.setTextColor(...rgb(ink)); doc.setFontSize(6.5);
   let y = 50;
-  doc.text(booking.intro, 40, y, { align: "center" }); y += 7;
+  doc.setFont("helvetica", "normal"); doc.text(booking.intro, 40, y, { align: "center" }); y += 7;
+  doc.setFont("courier", "normal");
   const rule = () => { doc.setDrawColor(...rgb(ink)); doc.setLineWidth(.15); doc.setLineDashPattern([1, 1], 0); doc.line(8, y, 72, y); y += 7; };
   rule();
   for (const [label, value] of booking.metadata) {
     doc.text(label, 8, y); doc.text(value, 72, y, { align: "right" }); y += 5;
   }
-  doc.text("QTY / PACKAGE", 8, y); doc.text("AMT", 72, y, { align: "right" }); y += 7;
+  rule(); doc.text("QTY / PACKAGE", 8, y); doc.text("AMT", 72, y, { align: "right" }); y += 7;
   for (const item of data.items) {
     const lines: string[] = doc.splitTextToSize(`${item.qty}x ${item.desc}`, 47);
-    doc.text(lines, 8, y); doc.text(`$${(item.qty * item.price).toFixed(2)}`, 72, y, { align: "right" });
+    doc.text(lines, 8, y); doc.text((item.qty * item.price).toFixed(2), 72, y, { align: "right" });
     y += Math.max(8, lines.length * 3 + 3);
   }
   rule(); doc.setFont("courier", "bold"); doc.setFontSize(9); doc.text("TOTAL", 8, y);
-  doc.setFontSize(14); doc.text(`$${receiptTotal(data).toFixed(2)}`, 72, y, { align: "right" }); y += 12;
-  doc.setFont("courier", "normal"); doc.setFontSize(7); doc.text("A little pick-me-up.", 40, y, { align: "center" }); y += 5;
-  doc.text("Thanks for stopping by.", 40, y, { align: "center" });
+  doc.setFontSize(14); doc.text(receiptTotal(data).toFixed(2), 72, y, { align: "right" }); y += 12;
+  doc.setFont("courier", "normal"); doc.setFontSize(7); doc.text("Your journey is confirmed.", 40, y, { align: "center" }); y += 5;
+  doc.text("See you in the Himalayas.", 40, y, { align: "center" });
   y += 7;
   doc.setFillColor(...rgb(ink));
   for (let i = 0; i < 40; i++) {
     doc.rect(19 + i * 1.05, y, i % 3 === 0 ? .65 : .3, 7, "F");
   }
   doc.setFontSize(5); doc.text("8 4 2 9 0 0 1 7 5 0", 40, y + 10, { align: "center" });
-  doc.setProperties({ title: `${data.brand} — Receipt #CR-8429`, subject: "80 mm print-ready receipt", creator: "Receipt Studio" });
-  doc.save("receipt-CR-8429.pdf");
+  doc.setProperties({ title: `${data.brand} — Booking ${booking.id}`, subject: "80 mm prepaid trekking booking confirmation", creator: "Himalayan Sync Treks" });
+  doc.save("booking-HST-8429.pdf");
 }
