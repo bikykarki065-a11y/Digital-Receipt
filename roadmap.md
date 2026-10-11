@@ -3,6 +3,6 @@
 - [x] Add live editor for brand, line items, total, and header colors.
 - [x] Export the current receipt as a print-ready PDF.
 - [x] Polish and verify touch controls and disabled/pressed states.
-- [ ] Pivot branding and receipt fields to Himalayan Sync Treks prepaid bookings.
-- [ ] Remove editing and align PDF export beside AUDIO.
-- [ ] Verify booking PDF and print/tear/audio controls at desktop and narrow widths.
+- [x] Pivot branding and receipt fields to Himalayan Sync Treks prepaid bookings.
+- [x] Remove editing and align PDF export beside AUDIO.
+- [x] Verify booking PDF and print/tear/audio controls at desktop and narrow widths.
