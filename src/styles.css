@@ -300,3 +300,20 @@
 .preset-row > button { height: 40px; }
 .preset-status { font: 9px var(--font-mono); color: var(--success); }
 @media (max-width: 760px) { .preset-row input, .preset-row select { font-size: 16px; height: 44px; } .preset-row > button { height: 44px; } }
+
+/* Keep all four booking actions inline, including on narrow touch screens. */
+.control-area { max-width: 100%; }
+.control-dock { max-width: 100%; }
+.order-meta div { gap: 8px; }
+.order-meta dd { text-align: right; min-width: 0; overflow-wrap: anywhere; }
+@media (max-width: 540px) {
+  .control-area { width: 100%; padding-left: 0; padding-right: 0; }
+  .control-dock { width: 100%; padding: 6px; gap: 2px; }
+  .control-dock .dock-button { flex: 1 1 0; min-width: 0; padding: 0 5px; gap: 5px; font-size: 8px; }
+  .control-dock .dock-button svg { width: 14px; height: 14px; flex-shrink: 0; }
+  .control-dock .dock-divider { flex-shrink: 0; }
+  .control-dock .audio-indicator { display: none; }
+}
+@media (max-width: 360px) {
+  .control-dock .dock-button { flex-direction: column; gap: 3px; font-size: 7px; }
+}

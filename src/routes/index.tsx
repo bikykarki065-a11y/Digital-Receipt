@@ -3,10 +3,10 @@ import { ReceiptPrinter } from "@/components/receipt-printer";
 
 export const Route = createFileRoute("/")({
   head: () => ({ meta: [
-    { title: "Receipt Studio — A moment. On paper." },
-    { name: "description", content: "A tactile virtual receipt studio. Print, tear, and enjoy the little moments with The Roast & Bean." },
-    { property: "og:title", content: "Receipt Studio — A moment. On paper." },
-    { property: "og:description", content: "A premium interactive thermal receipt printer with tactile paper and sound." },
+    { title: "Himalayan Sync Treks — Booking Confirmation" },
+    { name: "description", content: "Prepaid trekking booking confirmation for Himalayan Sync Treks across Nepal, India, Bhutan, and Tibet." },
+    { property: "og:title", content: "Himalayan Sync Treks — Booking Confirmation" },
+    { property: "og:description", content: "Print and download your Himalayan Sync Treks booking confirmation with traveler, group, departure, and guide details." },
     { property: "og:type", content: "website" },
     { name: "twitter:card", content: "summary_large_image" },
   ] }),
