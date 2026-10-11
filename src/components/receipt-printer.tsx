@@ -1,42 +1,28 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
-import { ArrowUpRight, Check, Coffee, Download, LoaderCircle, Pencil, Printer, Scissors, Volume2, VolumeX } from "lucide-react";
+import { ArrowUpRight, Check, Mountain, Download, LoaderCircle, Printer, Scissors, Volume2, VolumeX } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ReceiptEditor } from "@/components/receipt-editor";
-import { defaultReceipt, exportReceipt, receiptTotal, type ReceiptData } from "@/lib/receipt";
-
-const order = {
-  id: "#CR-8429",
-  date: "Oct 08, 09:01 PM",
-  cashier: "Alex R.",
-  items: [
-    { qty: 2, desc: "Iced Caramel Oat Macchiato", price: 13 },
-    { qty: 1, desc: "Classic Butter Croissant", price: 4.5 },
-  ],
-};
+import { booking, defaultReceipt, exportReceipt, receiptTotal, type ReceiptData } from "@/lib/receipt";
 
 function Receipt({ data }: { data: ReceiptData }) {
   return (
-    <article className="receipt-paper" aria-label="Order receipt">
+    <article className="receipt-paper" aria-label="Booking confirmation">
       <div className="receipt-brand">
-        <div className="brand-topline"><Coffee size={20} strokeWidth={1.5} /><span>EST. 2018</span></div>
+        <div className="brand-topline"><Mountain size={20} strokeWidth={1.5} /><span>BOOKING CONFIRMATION</span></div>
         <h2>{data.brand}</h2>
         <div className="brand-bottomline"><span>{data.tagline}</span><ArrowUpRight size={15} /></div>
       </div>
       <div className="receipt-body">
-        <div className="receipt-intro"><span>YOUR DAILY DOSE OF GOOD.</span><span>ARTISAN COFFEE ROASTERS</span></div>
+        <div className="receipt-intro"><span>{booking.intro}</span></div>
         <div className="receipt-rule" />
         <dl className="order-meta">
-          <div><dt>ORDER</dt><dd className="font-semibold">{order.id}</dd></div>
-          <div><dt>DATE</dt><dd>{order.date}</dd></div>
-          <div><dt>CASHIER</dt><dd>{order.cashier}</dd></div>
-          <div><dt>STATUS</dt><dd className="paid"><Check size={10} /> PAID</dd></div>
+          {booking.metadata.map(([label, value]) => <div key={label}><dt>{label}</dt><dd className={label === "STATUS" ? "paid" : ""}>{label === "STATUS" && <Check size={10} />}{value}</dd></div>)}
         </dl>
         <div className="receipt-rule" />
-        <div className="item-heading"><span>QTY / DESCRIPTION</span><span>AMT</span></div>
-        <div className="receipt-items">{data.items.map((item) => <div key={item.id}><span className="item-qty">{item.qty}×</span><span className="item-name">{item.desc}</span><span>${(item.qty * item.price).toFixed(2)}</span></div>)}</div>
+        <div className="item-heading"><span>QTY / PACKAGE</span><span>AMT</span></div>
+        <div className="receipt-items">{data.items.map((item) => <div key={item.id}><span className="item-qty">{item.qty}×</span><span className="item-name">{item.desc}</span><span>{(item.qty * item.price).toFixed(2)}</span></div>)}</div>
         <div className="receipt-rule" />
-        <div className="receipt-total"><span>TOTAL</span><strong>${receiptTotal(data).toFixed(2)}</strong></div>
-        <div className="receipt-thanks">A little pick-me-up.<br /><span>Thanks for stopping by.</span></div>
+        <div className="receipt-total"><span>TOTAL</span><strong>{receiptTotal(data).toFixed(2)}</strong></div>
+        <div className="receipt-thanks">Your journey is confirmed.<br /><span>See you in the Himalayas.</span></div>
         <div className="barcode" aria-hidden="true" />
         <div className="barcode-number">8 4 2 9 0 0 1 7 5 0</div>
       </div>
@@ -48,14 +34,10 @@ export function ReceiptPrinter() {
   const [state, setState] = useState<"printed" | "printing" | "torn">("printed");
   const [audio, setAudio] = useState(false);
   const [count, setCount] = useState(1);
-  const [data, setData] = useState<ReceiptData>(defaultReceipt);
-  const [editing, setEditing] = useState(false);
+  const data = defaultReceipt;
   const [exporting, setExporting] = useState(false);
   const [exportStatus, setExportStatus] = useState("");
   const [paperHeight, setPaperHeight] = useState(510);
-  const [past, setPast] = useState<ReceiptData[]>([]);
-  const [future, setFuture] = useState<ReceiptData[]>([]);
-  const lastEdit = useRef(0);
   const paperRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const paper = paperRef.current?.querySelector("article");
@@ -108,45 +90,19 @@ export function ReceiptPrinter() {
     finally { setExporting(false); }
   }
 
-  function show(next: ReceiptData) {
-    setData(next); setExportStatus("");
-    if (timer.current) clearTimeout(timer.current);
-    setState("printed");
-  }
-
-  function editReceipt(next: ReceiptData) {
-    const now = Date.now();
-    if (now - lastEdit.current > 700) setPast((items) => [...items.slice(-49), data]);
-    lastEdit.current = now;
-    setFuture([]);
-    show(next);
-  }
-
-  function undo() {
-    const previous = past.at(-1);
-    if (!previous) return;
-    setPast(past.slice(0, -1)); setFuture([data, ...future]); lastEdit.current = 0; show(previous);
-  }
-
-  function redo() {
-    const next = future[0];
-    if (!next) return;
-    setFuture(future.slice(1)); setPast([...past, data]); lastEdit.current = 0; show(next);
-  }
-
   return (
-    <div className={`studio-shell ${editing ? "editor-open" : ""}`} style={{ "--brand-crimson": data.startColor, "--brand-burgundy": data.endColor, "--receipt-height": `${paperHeight}px` } as CSSProperties}>
+    <div className="studio-shell" style={{ "--brand-crimson": data.startColor, "--brand-burgundy": data.endColor, "--receipt-height": `${paperHeight}px` } as CSSProperties}>
       <header className="studio-header">
-        <a href="/" className="studio-logo"><span className="logo-mark"><Printer size={19} strokeWidth={1.6} /></span><span>receipt<span className="logo-light">.studio</span></span></a>
+        <a href="/" className="studio-logo"><span className="logo-mark"><Printer size={19} strokeWidth={1.6} /></span><span>HST<span className="logo-light"> / bookings</span></span></a>
         <div className="header-status"><span className="status-dot" /> ALL SYSTEMS GOOD <span className="header-version">V.01</span></div>
       </header>
 
       <main className="workspace">
-        <div className="workspace-heading"><span className="eyebrow">THE EVERYDAY, REIMAGINED</span><h1>A moment. On paper.</h1></div>
+        <div className="workspace-heading"><span className="eyebrow">NEPAL | INDIA | BHUTAN | TIBET</span><h1>Himalayan Sync Treks</h1></div>
         <div className="printer-scene">
-          <div className="scene-label scene-label-left"><span className="label-line" /><span>THERMAL PRINTING</span><strong>Small details.<br />Lasting impressions.</strong></div>
+          <div className="scene-label scene-label-left"><span className="label-line" /><span>BOOKING CONFIRMATION</span><strong>Extraordinary trails.<br />Seamless journeys.</strong></div>
           <div className="printer-hardware">
-            <div className="machine-top"><span className="machine-wordmark">R<span className="wordmark-period">.</span></span><span className="machine-status"><span className={`status-dot ${state === "printing" ? "is-printing" : ""}`} />{state === "printing" ? "PRINTING" : "READY"}</span></div>
+            <div className="machine-top"><span className="machine-wordmark">HST<span className="wordmark-period">.</span></span><span className="machine-status"><span className={`status-dot ${state === "printing" ? "is-printing" : ""}`} />{state === "printing" ? "PRINTING" : "READY"}</span></div>
             <div className="machine-slot"><div className="slot-inner" /></div>
             <div className="machine-base"><span>THERMAL / 80 MM</span><span className="machine-lines">|||</span></div>
           </div>
@@ -154,7 +110,7 @@ export function ReceiptPrinter() {
             {state === "torn" && <div className="paper-stub" />}
             <div className="paper-motion" ref={paperRef}><Receipt data={data} /></div>
           </div>
-          <div className="scene-label scene-label-right"><span className="label-line" /><span>ORDER {order.id}</span><strong>Freshly brewed.<br />Perfectly printed.</strong><span className="label-index">01 / 01</span></div>
+          <div className="scene-label scene-label-right"><span className="label-line" /><span>BOOKING {booking.id}</span><strong>Your next adventure.<br />Confirmed on paper.</strong><span className="label-index">01 / 01</span></div>
           <div className="floor-shadow" />
         </div>
 
@@ -165,14 +121,15 @@ export function ReceiptPrinter() {
             <Button variant="ghost" className="dock-button" disabled={state !== "printed"} onClick={() => { setState("torn"); playSound("tear"); }}><Scissors size={17} /><span>TEAR</span></Button>
             <span className="dock-divider" />
             <Button variant="ghost" className={`dock-button ${audio ? "audio-on" : ""}`} aria-pressed={audio} onClick={() => { playSound("toggle", !audio); setAudio(!audio); }} title={audio ? "Mute printer sounds" : "Enable printer sounds"}>{audio ? <Volume2 size={17} /> : <VolumeX size={17} />}<span>AUDIO</span><span className="audio-indicator" /></Button>
+            <span className="dock-divider" />
+            <Button variant="ghost" className="dock-button" disabled={exporting || state !== "printed"} onClick={download}>{exporting ? <LoaderCircle className="animate-spin" size={17} /> : <Download size={17} />}<span>{exporting ? "Exporting…" : "Export PDF"}</span></Button>
           </nav>
-          <div className="print-status" role="status"><span className={`status-dot ${state === "printing" ? "is-printing" : ""}`} />{state === "printing" ? "Printing your little moment" : state === "torn" ? "Receipt torn. A fresh one awaits." : "Your receipt is ready"}</div>
-          <div className="receipt-actions"><Button variant="ghost" className="receipt-action" aria-pressed={editing} onClick={() => setEditing(!editing)}><Pencil />Edit receipt</Button><span className="dock-divider" /><Button variant="ghost" className="receipt-action" disabled={exporting || state !== "printed"} onClick={download}>{exporting ? <LoaderCircle className="animate-spin" /> : <Download />}<span>{exporting ? "Exporting…" : "Export PDF"}</span></Button></div>
+          <div className="print-status" role="status"><span className={`status-dot ${state === "printing" ? "is-printing" : ""}`} />{state === "printing" ? "Printing your confirmation" : state === "torn" ? "Confirmation torn. Re-print when ready." : "Your booking confirmation is ready"}</div>
+
           {exportStatus && <div className="export-status" role="status">{exportStatus}</div>}
         </div>
       </main>
-      <footer className="studio-footer"><span>A LITTLE ANALOG IN A DIGITAL WORLD.</span><span>DESIGNED TO FEEL SOMETHING <span className="footer-spark">✳</span></span></footer>
-      {editing && <ReceiptEditor data={data} onChange={editReceipt} onClose={() => setEditing(false)} onUndo={undo} onRedo={redo} canUndo={past.length > 0} canRedo={future.length > 0} />}
+      <footer className="studio-footer"><span>EXPLORE • EXPERIENCE • CONNECT</span><span>HIMALAYAN SYNC TREKS <span className="footer-spark">✳</span></span></footer>
     </div>
   );
 }
