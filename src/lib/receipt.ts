@@ -1,10 +1,22 @@
 export type ReceiptItem = { id: number; qty: number; desc: string; price: number };
 export type ReceiptData = { brand: string; tagline: string; startColor: string; endColor: string; items: ReceiptItem[]; totalOverride: string };
 export const defaultReceipt: ReceiptData = {
-  brand: "The Roast & Bean.", tagline: "GOOD COFFEE. GOOD COMPANY.",
+  brand: "Himalayan Sync Treks", tagline: "Nepal | India | Bhutan | Tibet",
   startColor: "#bd1836", endColor: "#650d28", totalOverride: "",
-  items: [{ id: 1, qty: 2, desc: "Iced Caramel Oat Macchiato", price: 6.5 }, { id: 2, qty: 1, desc: "Classic Butter Croissant", price: 4.5 }],
+  items: [{ id: 1, qty: 1, desc: "Everest Base Camp Trekking Package", price: 0 }],
 };
+export const booking = {
+  id: "#HST-8429",
+  intro: "EXPLORE • EXPERIENCE • CONNECT",
+  metadata: [
+    ["BOOKING", "#HST-8429"],
+    ["TRAVELER NAME", "[Traveler Name]"],
+    ["GROUP SIZE (PAX)", "[Pax]"],
+    ["DEPARTURE DATE", "[Departure Date]"],
+    ["GUIDE / AGENT", "[Guide / Agent]"],
+    ["STATUS", "PRE-PAID"],
+  ],
+} as const;
 export function receiptTotal(data: ReceiptData) {
   return data.totalOverride !== "" ? Number(data.totalOverride) : data.items.reduce((sum, item) => sum + item.qty * item.price, 0);
 }
@@ -39,14 +51,13 @@ export async function exportReceipt(data: ReceiptData) {
   doc.text(doc.splitTextToSize(data.tagline, 60), 10, 36);
   doc.setTextColor(...rgb(ink)); doc.setFontSize(6.5);
   let y = 50;
-  doc.text("YOUR DAILY DOSE OF GOOD.", 40, y, { align: "center" }); y += 5;
-  doc.text("ARTISAN COFFEE ROASTERS", 40, y, { align: "center" }); y += 7;
+  doc.text(booking.intro, 40, y, { align: "center" }); y += 7;
   const rule = () => { doc.setDrawColor(...rgb(ink)); doc.setLineWidth(.15); doc.setLineDashPattern([1, 1], 0); doc.line(8, y, 72, y); y += 7; };
   rule();
-  for (const [label, value] of [["ORDER", "#CR-8429"], ["DATE", "Oct 08, 09:01 PM"], ["CASHIER", "Alex R."], ["STATUS", "PAID"]] as const) {
+  for (const [label, value] of booking.metadata) {
     doc.text(label, 8, y); doc.text(value, 72, y, { align: "right" }); y += 5;
   }
-  rule(); doc.text("QTY / DESCRIPTION", 8, y); doc.text("AMT", 72, y, { align: "right" }); y += 7;
+  doc.text("QTY / PACKAGE", 8, y); doc.text("AMT", 72, y, { align: "right" }); y += 7;
   for (const item of data.items) {
     const lines: string[] = doc.splitTextToSize(`${item.qty}x ${item.desc}`, 47);
     doc.text(lines, 8, y); doc.text(`$${(item.qty * item.price).toFixed(2)}`, 72, y, { align: "right" });
